@@ -120,6 +120,11 @@ namespace RomanCalculatorTDDTests
             Assert.Throws<InvalidRomanNumberException>(() => _calculator.ToArabicNumber("CCCC"));
             Assert.Throws<InvalidRomanNumberException>(() => _calculator.ToArabicNumber("DD"));
             Assert.Throws<InvalidRomanNumberException>(() => _calculator.ToArabicNumber("MMMM"));
+
+            Assert.Throws<InvalidRomanNumberException>(() => _calculator.ToArabicNumber("XXVVI"));
+            Assert.Throws<InvalidRomanNumberException>(() => _calculator.ToArabicNumber("XXXXI"));
+            Assert.Throws<InvalidRomanNumberException>(() => _calculator.ToArabicNumber("CCIIII"));
+            Assert.Throws<InvalidRomanNumberException>(() => _calculator.ToArabicNumber("MMMMXVI"));
         }
 
         [Test]

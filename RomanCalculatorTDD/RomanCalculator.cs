@@ -1,6 +1,5 @@
 ﻿using RomanCalculatorTDD.Models;
 using RomanCalculatorTDD.Extensions;
-using System;
 using System.Collections.Generic;
 using System.Linq;
 
@@ -35,9 +34,10 @@ namespace RomanCalculatorTDD
             var isRepeated = true;
             for (var j = 1; j <= r.AmountOfRepetitions; j++)
             {
-                if (roman[i] != roman[j])
+                if (roman[i] != roman[i + j])
                 {
                     isRepeated = false;
+                    break;
                 }
             }
 
