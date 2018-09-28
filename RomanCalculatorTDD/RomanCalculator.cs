@@ -140,41 +140,74 @@ namespace RomanCalculatorTDD
                 if (n <= 0)
                     continue;
 
-                var value = values.GetRomanValue(n);
-                if (value.HasValue)
-                {
-                    result += value;
-                }
-                else
-                {
-                    var previousValue = values.GetPreviousRomanValue(n);
-                    var nextValue = values.GetNextRomanValue(n);
-
-                    // Check if we repeat the amount of times possible, we get the value or we need to substract.
-                    if (previousValue * values.GetRepetitions(previousValue) >= n)
-                    {
-                        // Only additions.
-                        int counted = 0;
-                        while (counted < n)
-                        {
-                            counted += values.GetArabicValue(previousValue);
-                            result += previousValue.ToString();
-                        }
-                    }
-                    else
-                    {
-                        // Need substractions.
-
-                    }
-                    // Coger el valor por encima y por debajo, e ir jugando con ellos hastsa sacarlo.
-                    // Por ejemplo si hay que hacer el 300, el anterior es 100 (C) y el superior 500 (D)
-                    // Se prueba cuantas hasta 3
-                }
+                result += Recursive(n);
             }
 
             return result;
         }
 
+        private string Recursive(int n)
+        {
+            var result = string.Empty;
+
+            var value = values.GetRomanValue(n);
+            if (value.HasValue)
+            {
+                result += value;
+            }
+            else
+            {
+
+                var previousValue = values.GetPreviousRomanValue(n);
+                //var nextValue = values.GetNextRomanValue(n);
+                var counted = 0;
+                while (counted != n && counted + previousValue.ArabicValue <= n)
+                {
+                    counted += previousValue.ArabicValue;
+                    result += previousValue.RomanValue;
+                }
+
+                // Check if the resulted number is legal or not.
+                if (!ValidateRomanNumber(result))
+                {
+
+                }
+
+                // If the part of the number is not complete, continue with smaller values.
+                if (counted != n)
+                {
+                    result += Recursive(n - counted);
+                }
+
+                // Check if we repeat the amount of times possible, we get the value or we need to substract.
+                //if (previousValue != null && previousValue.ArabicValue * values.GetRepetitions(previousValue.RomanValue) >= n)
+                //{
+                //    // Only additions.
+                //    var counted = 0;
+                //    while (counted < n && counted + previousValue.ArabicValue <= n)
+                //    {
+                //        counted += previousValue.ArabicValue;
+                //        result += previousValue.RomanValue;
+                //    }
+
+                //    if (counted != n)
+                //    {
+                //        // Check for lower numbers
+                //        result += Recursive(n - counted);
+                //    }
+                //}
+                //else
+                //{
+                //    // Need substractions.
+
+                //}
+                // Coger el valor por encima y por debajo, e ir jugando con ellos hastsa sacarlo.
+                // Por ejemplo si hay que hacer el 300, el anterior es 100 (C) y el superior 500 (D)
+                // Se prueba cuantas hasta 3
+            }
+
+            return result;
+        }
 
 
         private void ValidateArabicNumberToConvert(int arabic)

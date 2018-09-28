@@ -12,7 +12,7 @@ namespace RomanCalculatorTDDTests
         public ConvertToRomanNumberTests()
         {
             _calculator = new RomanCalculator();
-        }      
+        }
 
         [Test]
         public void BasicNumberToRomanTest()
@@ -44,24 +44,24 @@ namespace RomanCalculatorTDDTests
         [Test]
         public void SubstractNumberToRomanTest()
         {
-            Assert.AreEqual(4, _calculator.ToArabicNumber("IV"));
-            Assert.AreEqual(90, _calculator.ToArabicNumber("XC"));
-            Assert.AreEqual(95, _calculator.ToArabicNumber("XCV"));
-            Assert.AreEqual(99, _calculator.ToArabicNumber("XCIX"));
-            Assert.AreEqual(400, _calculator.ToArabicNumber("CD"));
-            Assert.AreEqual(899, _calculator.ToArabicNumber("DCCCXCIX"));
-            Assert.AreEqual(924, _calculator.ToArabicNumber("CMXXIV"));
-            Assert.AreEqual(1999, _calculator.ToArabicNumber("MCMXCIX"));
-            Assert.AreEqual(2444, _calculator.ToArabicNumber("MMCDXLIV"));
+            Assert.AreEqual("IV", _calculator.ToRomanNumber(4));
+            Assert.AreEqual("XC", _calculator.ToRomanNumber(90));
+            Assert.AreEqual("XCV", _calculator.ToRomanNumber(95));
+            Assert.AreEqual("XCIX", _calculator.ToRomanNumber(99));
+            Assert.AreEqual("CD", _calculator.ToRomanNumber(400));
+            Assert.AreEqual("DCCCXCIX", _calculator.ToRomanNumber(899));
+            Assert.AreEqual("CMXXIV", _calculator.ToRomanNumber(924));
+            Assert.AreEqual("MCMXCIX", _calculator.ToRomanNumber(1999));
+            Assert.AreEqual("MMCDXLIV", _calculator.ToRomanNumber(2444));
         }
 
         [Test]
         public void SuggestedNumbersToRomanTest()
         {
-            //Assert.AreEqual("XC", _calculator.ToRomanNumber(90));
-            //Assert.AreEqual("CMXCIX", _calculator.ToRomanNumber(999));
-            //Assert.AreEqual("MCMXCIX", _calculator.ToRomanNumber(1999));
-            //Assert.AreEqual("MMCDXLIV", _calculator.ToRomanNumber(2444));
+            Assert.AreEqual("XC", _calculator.ToRomanNumber(90));
+            Assert.AreEqual("CMXCIX", _calculator.ToRomanNumber(999));
+            Assert.AreEqual("MCMXCIX", _calculator.ToRomanNumber(1999));
+            Assert.AreEqual("MMCDXLIV", _calculator.ToRomanNumber(2444));
         }
 
         [Test]

@@ -11,14 +11,14 @@ namespace RomanCalculatorTDD.Extensions
             return numbers.FirstOrDefault(x => x.ArabicValue == value)?.RomanValue;
         }
 
-        public static char? GetNextRomanValue(this List<RomanArabicValue> numbers, int value)
+        public static RomanArabicValue GetNextRomanValue(this List<RomanArabicValue> numbers, int value)
         {
-            return numbers.FirstOrDefault(x => x.ArabicValue > value)?.RomanValue;
+            return numbers.FirstOrDefault(x => x.ArabicValue > value);
         }
 
-        public static char GetPreviousRomanValue(this List<RomanArabicValue> numbers, int value)
+        public static RomanArabicValue GetPreviousRomanValue(this List<RomanArabicValue> numbers, int value)
         {
-            return numbers.Last(x => x.ArabicValue < value).RomanValue;
+            return numbers.Last(x => x.ArabicValue < value);
         }
 
         public static char GetClosestRomanValue(this List<RomanArabicValue> numbers, int value)
@@ -26,7 +26,7 @@ namespace RomanCalculatorTDD.Extensions
             var result = numbers.GetRomanValue(value);
             if (!result.HasValue)
             {
-                result = numbers.GetPreviousRomanValue(value);
+                result = numbers.GetPreviousRomanValue(value).RomanValue;
             }
 
             return result.Value;
