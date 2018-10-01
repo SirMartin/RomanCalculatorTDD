@@ -128,6 +128,16 @@ namespace RomanCalculatorTDDTests
         }
 
         [Test]
+        public void InvalidNumbersBecauseWrongValueSetTest()
+        {
+            Assert.Throws<InvalidRomanNumberException>(() => _calculator.ToArabicNumber("F"));
+            Assert.Throws<InvalidRomanNumberException>(() => _calculator.ToArabicNumber("P"));
+            Assert.Throws<InvalidRomanNumberException>(() => _calculator.ToArabicNumber("r"));
+
+            Assert.Throws<InvalidRomanNumberException>(() => _calculator.ToArabicNumber(string.Empty));
+        }
+
+        [Test]
         public void InvalidNumbersByPositionArabicTest()
         {
             Assert.Throws<InvalidRomanNumberException>(() => _calculator.ToArabicNumber("VX"));

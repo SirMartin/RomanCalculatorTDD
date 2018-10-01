@@ -89,10 +89,23 @@ namespace RomanCalculatorTDD
             return true;
         }
 
+        private bool CheckExistInTheValueSet(string roman, int i)
+        {
+            return _values.Any(c => c.RomanValue == roman[i]);
+        }
+
         private bool ValidateRomanNumber(string roman)
         {
+            if (string.IsNullOrEmpty(roman))
+            {
+                return false;
+            }
+
             for (var i = 0; i < roman.Length; i++)
             {
+                if (!CheckExistInTheValueSet(roman, i))
+                    return false;
+
                 if (!CheckForMultipliers(roman, i))
                     return false;
 
