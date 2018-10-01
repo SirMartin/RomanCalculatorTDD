@@ -51,6 +51,7 @@
     <Compile Include="ConvertToArabicNumberTests.cs" />
     <Compile Include="ConsistentRomanArabicConvertionTests.cs" />
     <Compile Include="ConvertToRomanNumberTests.cs" />
+    <Compile Include="RomanArabicModelExtensionsTests.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>

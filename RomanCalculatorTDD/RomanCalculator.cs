@@ -7,29 +7,37 @@ namespace RomanCalculatorTDD
 {
     public class RomanCalculator
     {
-        public readonly List<RomanArabicValue> values;
-        public RomanCalculator()
+        private readonly List<RomanArabicValue> Values;
+        public RomanCalculator(List<RomanArabicValue> valueSet)
         {
-            values = new List<RomanArabicValue>
-            {
-                new RomanArabicValue('I', 1, 3),
-                new RomanArabicValue('V', 5 ,1),
-                new RomanArabicValue('X', 10 ,3),
-                new RomanArabicValue('L', 50 ,1),
-                new RomanArabicValue('C', 100 ,3),
-                new RomanArabicValue('D', 500 ,1),
-                new RomanArabicValue('M', 1000, 3)
-            };
+            Values = valueSet;
         }
 
-        #region To Arabic
+        #region Arabic Number Validations
 
-        private void CheckForMultipliers(string roman, int i)
+        private void ValidateArabicNumberToConvert(int arabic)
+        {
+            if (arabic <= 0)
+            {
+                throw new InvalidArabicNumberException();
+            }
+
+            if (arabic > 3999)
+            {
+                throw new TooBigArabicNumberException(arabic);
+            }
+        }
+
+        #endregion
+
+        #region Roman Number Validations
+
+        private bool CheckForMultipliers(string roman, int i)
         {
             // Check for more than 3 repeated element (for I,X,C,M) and more than 1 (for V, L, D).
-            var r = values.FirstOrDefault(x => x.RomanValue == roman[i]);
+            var r = Values.FirstOrDefault(x => x.RomanValue == roman[i]);
             if (r == null || i + r.AmountOfRepetitions >= roman.Length)
-                return;
+                return true;
 
             var isRepeated = true;
             for (var j = 1; j <= r.AmountOfRepetitions; j++)
@@ -41,58 +49,69 @@ namespace RomanCalculatorTDD
                 }
             }
 
-            if (isRepeated)
-            {
-                throw new InvalidRomanNumberException(roman);
-            }
+            return !isRepeated;
         }
 
-        private void CheckForPositions(string roman, int i)
+        private bool CheckForPositions(string roman, int i)
         {
             // Check the right positions.
             if (i + 1 >= roman.Length)
-                return;
+                return true;
 
             switch (roman[i])
             {
                 case 'I':
-                    if (values.GetArabicValue(roman[i + 1]) > values.GetArabicValue('X'))
+                    if (Values.GetArabicValue(roman[i + 1]) > Values.GetArabicValue('X'))
                     {
-                        throw new InvalidRomanNumberException(roman);
+                        return false;
                     }
                     break;
                 case 'X':
-                    if (values.GetArabicValue(roman[i + 1]) > values.GetArabicValue('C'))
+                    if (Values.GetArabicValue(roman[i + 1]) > Values.GetArabicValue('C'))
                     {
-                        throw new InvalidRomanNumberException(roman);
+                        return false;
                     }
                     break;
                 case 'V':
                 case 'L':
                 case 'D':
-                    if (values.GetArabicValue(roman[i]) < values.GetArabicValue(roman[i + 1]))
+                    if (Values.GetArabicValue(roman[i]) < Values.GetArabicValue(roman[i + 1]))
                     {
-                        throw new InvalidRomanNumberException(roman);
+                        return false;                        
                     }
                     break;
                 default:
                     break;
             }
+
+            return true;
         }
 
-        private void ValidateRomanNumber(string roman)
+        private bool ValidateRomanNumber(string roman)
         {
             for (var i = 0; i < roman.Length; i++)
             {
-                CheckForMultipliers(roman, i);
+                if (!CheckForMultipliers(roman, i))
+                    return false;
 
-                CheckForPositions(roman, i);
+                if (!CheckForPositions(roman, i))
+                    return false;
             }
+
+            return true;
         }
+
+        #endregion
+
+        #region Calculation to Arabic
 
         public int ToArabicNumber(string roman)
         {
-            ValidateRomanNumber(roman);
+            var isValid = ValidateRomanNumber(roman);
+            if (!isValid)
+            {
+                throw new InvalidRomanNumberException(roman);
+            }
 
             var result = 0;
             for (var i = 0; i < roman.Length; i++)
@@ -102,13 +121,13 @@ namespace RomanCalculatorTDD
                 // Check if its the last char.
                 if (i == roman.Length - 1)
                 {
-                    result += values.GetArabicValue(c);
+                    result += Values.GetArabicValue(c);
                     continue;
                 }
 
                 // Not the latest char.
-                var actualCharValue = values.GetArabicValue(c);
-                if (values.GetArabicValue(roman[i + 1]) > actualCharValue)
+                var actualCharValue = Values.GetArabicValue(c);
+                if (Values.GetArabicValue(roman[i + 1]) > actualCharValue)
                 {
                     // Subtraction
                     result -= actualCharValue;
@@ -126,7 +145,7 @@ namespace RomanCalculatorTDD
 
         #endregion
 
-        #region To Roman
+        #region Calculation to Roman
 
         public string ToRomanNumber(int arabic)
         {
@@ -146,80 +165,81 @@ namespace RomanCalculatorTDD
             return result;
         }
 
-        private string Recursive(int n)
+        private string Recursive(int n, char? latestValue = null, bool isFullNumber = true)
         {
             var result = string.Empty;
 
-            var value = values.GetRomanValue(n);
-            if (value.HasValue)
+            var value = Values.GetRomanValue(n);
+            if (value.HasValue && (!latestValue.HasValue || latestValue.Value != value))
             {
                 result += value;
             }
             else
             {
-
-                var previousValue = values.GetPreviousRomanValue(n);
-                //var nextValue = values.GetNextRomanValue(n);
-                var counted = 0;
-                while (counted != n && counted + previousValue.ArabicValue <= n)
+                var previousValue = Values.GetPreviousRomanValue(n);
+                if (previousValue != null)
                 {
-                    counted += previousValue.ArabicValue;
-                    result += previousValue.RomanValue;
+                    var counted = 0;
+                    var repetitions = 0;
+                    while (counted != n && counted + previousValue.ArabicValue <= n &&
+                           repetitions < previousValue.AmountOfRepetitions)
+                    {
+                        counted += previousValue.ArabicValue;
+                        result += previousValue.RomanValue;
+                        repetitions++;
+                    }
+
+                    // The number is found.
+                    if (counted == n)
+                    {
+                        return result;
+                    }
+
+                    // If the part of the number is not complete, continue with smaller values.
+                    if (counted != n && isFullNumber)
+                    {
+                        var subResult = Recursive(n - counted, previousValue.RomanValue, false);
+                        if (!string.IsNullOrEmpty(subResult))
+                        {
+                            // We have found the number so we can return it.
+                            return result + subResult;
+                        }
+
+                    }
+                    else if (counted != n && !isFullNumber)
+                    {
+                        // Return as fail.
+                        return null;
+                    }
                 }
 
-                // Check if the resulted number is legal or not.
-                if (!ValidateRomanNumber(result))
-                {
+                if (!isFullNumber)
+                    return null;
 
-                }
-
-                // If the part of the number is not complete, continue with smaller values.
-                if (counted != n)
-                {
-                    result += Recursive(n - counted);
-                }
-
-                // Check if we repeat the amount of times possible, we get the value or we need to substract.
-                //if (previousValue != null && previousValue.ArabicValue * values.GetRepetitions(previousValue.RomanValue) >= n)
-                //{
-                //    // Only additions.
-                //    var counted = 0;
-                //    while (counted < n && counted + previousValue.ArabicValue <= n)
-                //    {
-                //        counted += previousValue.ArabicValue;
-                //        result += previousValue.RomanValue;
-                //    }
-
-                //    if (counted != n)
-                //    {
-                //        // Check for lower numbers
-                //        result += Recursive(n - counted);
-                //    }
-                //}
-                //else
-                //{
-                //    // Need substractions.
-
-                //}
-                // Coger el valor por encima y por debajo, e ir jugando con ellos hastsa sacarlo.
-                // Por ejemplo si hay que hacer el 300, el anterior es 100 (C) y el superior 500 (D)
-                // Se prueba cuantas hasta 3
+                // The other methods didn't work, try with subtraction.
+                result = MakeSubtraction(n);
             }
 
             return result;
         }
 
-
-        private void ValidateArabicNumberToConvert(int arabic)
+        private string MakeSubtraction(int arabicNumber)
         {
-            if (arabic <= 0)
+            var tempNumber = Values.GetNextRomanValue(arabicNumber).ArabicValue;
+            var n = Values.GetPreviousSubtractableRomanValue(tempNumber);
+            var result = Values.GetRomanValue(tempNumber).ToString();
+            while (tempNumber > arabicNumber)
             {
-                throw new InvalidArabicNumberException();
+                result = n.RomanValue + result;
+                tempNumber = tempNumber - n.ArabicValue;
             }
-            else if (arabic > 3333)
-            {
-                throw new TooBigArabicNumberException(arabic);
-            }
+
+            return result;
+        }
+
+        private int GetFullUnitNumber(int number)
+        {
+            return int.Parse("1".PadRight(number.ToString().Length + 1, '0'));
         }
 
         private List<int> SplitNumber(int number)

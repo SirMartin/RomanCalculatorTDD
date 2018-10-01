@@ -18,33 +18,17 @@ namespace RomanCalculatorTDD.Extensions
 
         public static RomanArabicValue GetPreviousRomanValue(this List<RomanArabicValue> numbers, int value)
         {
-            return numbers.Last(x => x.ArabicValue < value);
+            return numbers.LastOrDefault(x => x.ArabicValue < value);
         }
 
-        public static char GetClosestRomanValue(this List<RomanArabicValue> numbers, int value)
+        public static RomanArabicValue GetPreviousSubtractableRomanValue(this List<RomanArabicValue> numbers, int value)
         {
-            var result = numbers.GetRomanValue(value);
-            if (!result.HasValue)
-            {
-                result = numbers.GetPreviousRomanValue(value).RomanValue;
-            }
-
-            return result.Value;
+            return numbers.LastOrDefault(x => x.ArabicValue < value && x.IsSubtractable);
         }
-
+        
         public static int GetArabicValue(this List<RomanArabicValue> numbers, char value)
         {
             return numbers.First(x => x.RomanValue == value).ArabicValue;
-        }
-
-        public static int GetRepetitions(this List<RomanArabicValue> numbers, int value)
-        {
-            return numbers.First(x => x.ArabicValue == value).AmountOfRepetitions;
-        }
-
-        public static int GetRepetitions(this List<RomanArabicValue> numbers, char value)
-        {
-            return numbers.First(x => x.RomanValue == value).AmountOfRepetitions;
         }
     }
 }

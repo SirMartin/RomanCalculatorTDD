@@ -1,6 +1,7 @@
-﻿using NUnit.Framework;
+﻿using System.Collections.Generic;
+using NUnit.Framework;
 using RomanCalculatorTDD;
-using RomanCalculatorTDD.Extensions;
+using RomanCalculatorTDD.Models;
 
 namespace RomanCalculatorTDDTests
 {
@@ -9,9 +10,22 @@ namespace RomanCalculatorTDDTests
     {
         RomanCalculator _calculator;
 
+        private List<RomanArabicValue> _values;
+
         public ConvertToRomanNumberTests()
         {
-            _calculator = new RomanCalculator();
+            _values = new List<RomanArabicValue>
+            {
+                new RomanArabicValue('I', 1, 3, true),
+                new RomanArabicValue('V', 5 ,1, false),
+                new RomanArabicValue('X', 10 ,3, true),
+                new RomanArabicValue('L', 50 ,1, false),
+                new RomanArabicValue('C', 100 ,3, true),
+                new RomanArabicValue('D', 500 ,1, false),
+                new RomanArabicValue('M', 1000, 3, true)
+            };
+
+            _calculator = new RomanCalculator(_values);
         }
 
         [Test]
@@ -53,6 +67,7 @@ namespace RomanCalculatorTDDTests
             Assert.AreEqual("CMXXIV", _calculator.ToRomanNumber(924));
             Assert.AreEqual("MCMXCIX", _calculator.ToRomanNumber(1999));
             Assert.AreEqual("MMCDXLIV", _calculator.ToRomanNumber(2444));
+            Assert.AreEqual("MMMCMXCIX", _calculator.ToRomanNumber(3999));
         }
 
         [Test]
@@ -69,19 +84,7 @@ namespace RomanCalculatorTDDTests
         {
             Assert.Throws<InvalidArabicNumberException>(() => _calculator.ToRomanNumber(-5));
             Assert.Throws<InvalidArabicNumberException>(() => _calculator.ToRomanNumber(0));
-            Assert.Throws<TooBigArabicNumberException>(() => _calculator.ToRomanNumber(3334));
+            Assert.Throws<TooBigArabicNumberException>(() => _calculator.ToRomanNumber(4000));
         }
-
-        [Test]
-        public void PreviousAndNextValues()
-        {
-            Assert.AreEqual('X', _calculator.values.GetPreviousRomanValue(20));
-            Assert.AreEqual('L', _calculator.values.GetNextRomanValue(20));
-
-            Assert.AreEqual('M', _calculator.values.GetPreviousRomanValue(2000));
-            Assert.AreEqual(null, _calculator.values.GetNextRomanValue(2000));
-        }
-
-
     }
 }

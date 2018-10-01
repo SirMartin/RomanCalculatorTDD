@@ -1,5 +1,7 @@
-﻿using NUnit.Framework;
+﻿using System.Collections.Generic;
+using NUnit.Framework;
 using RomanCalculatorTDD;
+using RomanCalculatorTDD.Models;
 
 namespace RomanCalculatorTDDTests
 {
@@ -8,9 +10,22 @@ namespace RomanCalculatorTDDTests
     {
         RomanCalculator _calculator;
 
+        private List<RomanArabicValue> _values;
+
         public ConsistentRomanArabicConvertionTests()
         {
-            _calculator = new RomanCalculator();
+            _values = new List<RomanArabicValue>
+            {
+                new RomanArabicValue('I', 1, 3, true),
+                new RomanArabicValue('V', 5 ,1, false),
+                new RomanArabicValue('X', 10 ,3, true),
+                new RomanArabicValue('L', 50 ,1, false),
+                new RomanArabicValue('C', 100 ,3, true),
+                new RomanArabicValue('D', 500 ,1, false),
+                new RomanArabicValue('M', 1000, 3, true)
+            };
+
+            _calculator = new RomanCalculator(_values);
         }
 
         [Test]
@@ -44,7 +59,7 @@ namespace RomanCalculatorTDDTests
         [Test]
         public void ArabicToRomanToArabicTest()
         {
-            for (int i = 1; i <= 3000; i++)
+            for (int i = 1; i <= 3999; i++)
             {
                 Assert.AreEqual(i, _calculator.ToArabicNumber(_calculator.ToRomanNumber(i)));
             }
