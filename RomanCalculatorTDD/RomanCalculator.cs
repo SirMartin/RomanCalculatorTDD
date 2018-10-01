@@ -7,10 +7,19 @@ namespace RomanCalculatorTDD
 {
     public class RomanCalculator
     {
-        private readonly List<RomanArabicValue> Values;
-        public RomanCalculator(List<RomanArabicValue> valueSet)
+        private readonly List<RomanArabicValue> _values;
+        public RomanCalculator()
         {
-            Values = valueSet;
+            _values = new List<RomanArabicValue>
+            {
+                new RomanArabicValue('I', 1, 3, true),
+                new RomanArabicValue('V', 5 ,1, false),
+                new RomanArabicValue('X', 10 ,3, true),
+                new RomanArabicValue('L', 50 ,1, false),
+                new RomanArabicValue('C', 100 ,3, true),
+                new RomanArabicValue('D', 500 ,1, false),
+                new RomanArabicValue('M', 1000, 3, true)
+            };
         }
 
         #region Arabic Number Validations
@@ -35,7 +44,7 @@ namespace RomanCalculatorTDD
         private bool CheckForMultipliers(string roman, int i)
         {
             // Check for more than 3 repeated element (for I,X,C,M) and more than 1 (for V, L, D).
-            var r = Values.FirstOrDefault(x => x.RomanValue == roman[i]);
+            var r = _values.FirstOrDefault(x => x.RomanValue == roman[i]);
             if (r == null || i + r.AmountOfRepetitions >= roman.Length)
                 return true;
 
@@ -61,13 +70,13 @@ namespace RomanCalculatorTDD
             switch (roman[i])
             {
                 case 'I':
-                    if (Values.GetArabicValue(roman[i + 1]) > Values.GetArabicValue('X'))
+                    if (_values.GetArabicValue(roman[i + 1]) > _values.GetArabicValue('X'))
                     {
                         return false;
                     }
                     break;
                 case 'X':
-                    if (Values.GetArabicValue(roman[i + 1]) > Values.GetArabicValue('C'))
+                    if (_values.GetArabicValue(roman[i + 1]) > _values.GetArabicValue('C'))
                     {
                         return false;
                     }
@@ -75,7 +84,7 @@ namespace RomanCalculatorTDD
                 case 'V':
                 case 'L':
                 case 'D':
-                    if (Values.GetArabicValue(roman[i]) < Values.GetArabicValue(roman[i + 1]))
+                    if (_values.GetArabicValue(roman[i]) < _values.GetArabicValue(roman[i + 1]))
                     {
                         return false;                        
                     }
@@ -121,13 +130,13 @@ namespace RomanCalculatorTDD
                 // Check if its the last char.
                 if (i == roman.Length - 1)
                 {
-                    result += Values.GetArabicValue(c);
+                    result += _values.GetArabicValue(c);
                     continue;
                 }
 
                 // Not the latest char.
-                var actualCharValue = Values.GetArabicValue(c);
-                if (Values.GetArabicValue(roman[i + 1]) > actualCharValue)
+                var actualCharValue = _values.GetArabicValue(c);
+                if (_values.GetArabicValue(roman[i + 1]) > actualCharValue)
                 {
                     // Subtraction
                     result -= actualCharValue;
@@ -169,14 +178,14 @@ namespace RomanCalculatorTDD
         {
             var result = string.Empty;
 
-            var value = Values.GetRomanValue(n);
+            var value = _values.GetRomanValue(n);
             if (value.HasValue && (!latestValue.HasValue || latestValue.Value != value))
             {
                 result += value;
             }
             else
             {
-                var previousValue = Values.GetPreviousRomanValue(n);
+                var previousValue = _values.GetPreviousRomanValue(n);
                 if (previousValue != null)
                 {
                     var counted = 0;
@@ -225,9 +234,9 @@ namespace RomanCalculatorTDD
 
         private string MakeSubtraction(int arabicNumber)
         {
-            var tempNumber = Values.GetNextRomanValue(arabicNumber).ArabicValue;
-            var n = Values.GetPreviousSubtractableRomanValue(tempNumber);
-            var result = Values.GetRomanValue(tempNumber).ToString();
+            var tempNumber = _values.GetNextRomanValue(arabicNumber).ArabicValue;
+            var n = _values.GetPreviousSubtractableRomanValue(tempNumber);
+            var result = _values.GetRomanValue(tempNumber).ToString();
             while (tempNumber > arabicNumber)
             {
                 result = n.RomanValue + result;
