@@ -164,19 +164,31 @@ namespace RomanCalculatorTDD
                 if (n <= 0)
                     continue;
 
-                result += Recursive(n);
+                result += CalculateNumber(n);
             }
 
             return result;
         }
 
-        private string Recursive(int n, char? latestValue = null, bool isFullNumber = true)
+        /// <summary>
+        /// Calculate the number, looking it on 4 different steps.
+        /// 1.- Find the exact number if exists.
+        /// 2.- Find the exact number consisting on repeat the same roman number.
+        /// 3.- Find the number using repetitions and exact number on 2 iterations.
+        /// 4.- Find the number subtracting from the next one.
+        /// </summary>
+        /// <param name="n"></param>
+        /// <param name="latestValue"></param>
+        /// <param name="isFullNumber"></param>
+        /// <returns></returns>
+        private string CalculateNumber(int n, char? latestValue = null, bool isFullNumber = true)
         {
             var result = string.Empty;
 
             var value = _values.GetRomanValue(n);
             if (value.HasValue && (!latestValue.HasValue || latestValue.Value != value))
             {
+                // Get exact number.
                 result += value;
             }
             else
@@ -201,25 +213,22 @@ namespace RomanCalculatorTDD
                     }
 
                     // If the part of the number is not complete, continue with smaller values.
-                    if (counted != n && isFullNumber)
+                    if (isFullNumber)
                     {
-                        var subResult = Recursive(n - counted, previousValue.RomanValue, false);
+                        var subResult = CalculateNumber(n - counted, previousValue.RomanValue, false);
                         if (!string.IsNullOrEmpty(subResult))
                         {
                             // We have found the number so we can return it.
                             return result + subResult;
                         }
-
-                    }
-                    else if (counted != n && !isFullNumber)
-                    {
-                        // Return as fail.
-                        return null;
                     }
                 }
 
                 if (!isFullNumber)
+                {
+                    // Is in the recursive call, so if we have not found the number yet, we need to go back.
                     return null;
+                }
 
                 // The other methods didn't work, try with subtraction.
                 result = MakeSubtraction(n);
@@ -242,12 +251,7 @@ namespace RomanCalculatorTDD
             return result;
         }
 
-        private int GetFullUnitNumber(int number)
-        {
-            return int.Parse("1".PadRight(number.ToString().Length + 1, '0'));
-        }
-
-        private List<int> SplitNumber(int number)
+        private IEnumerable<int> SplitNumber(int number)
         {
             var result = new List<int>();
             int multiplier = 1;

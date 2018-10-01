@@ -4,11 +4,11 @@ using RomanCalculatorTDD;
 namespace RomanCalculatorTDDTests
 {
     [TestFixture]
-    public class ConsistentRomanArabicConvertionTests
+    public class ConsistentRomanArabicConversionTests
     {
         RomanCalculator _calculator;
 
-        public ConsistentRomanArabicConvertionTests()
+        public ConsistentRomanArabicConversionTests()
         {
             _calculator = new RomanCalculator();
         }
