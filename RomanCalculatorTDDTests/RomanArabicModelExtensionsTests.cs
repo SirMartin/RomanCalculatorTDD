@@ -30,6 +30,12 @@ namespace RomanCalculatorTDDTests
             Assert.AreEqual('I', _values.GetRomanValue(1));
             Assert.AreEqual('C', _values.GetRomanValue(100));
             Assert.AreEqual('D', _values.GetRomanValue(500));
+            Assert.AreEqual(null, _values.GetRomanValue(333));
+
+            Assert.AreEqual('I', _values.GetRomanValueModel(1)?.RomanValue);
+            Assert.AreEqual('C', _values.GetRomanValueModel(100)?.RomanValue);
+            Assert.AreEqual('D', _values.GetRomanValueModel(500)?.RomanValue);
+            Assert.AreEqual(null, _values.GetRomanValueModel(333)?.RomanValue);
         }
 
         [Test]
@@ -62,6 +68,21 @@ namespace RomanCalculatorTDDTests
             Assert.AreEqual(1, _values.GetArabicValue('I'));
             Assert.AreEqual(10, _values.GetArabicValue('X'));
             Assert.AreEqual(50, _values.GetArabicValue('L'));
+            Assert.AreEqual(null, _values.GetArabicValue('P'));
+
+            Assert.AreEqual(1, _values.GetArabicValueModel('I')?.ArabicValue);
+            Assert.AreEqual(10, _values.GetArabicValueModel('X')?.ArabicValue);
+            Assert.AreEqual(50, _values.GetArabicValueModel('L')?.ArabicValue);
+            Assert.AreEqual(null, _values.GetArabicValueModel('P')?.ArabicValue);
         }
+
+        [Test]
+        public void GetMaximunNextRomanValueTests()
+        {
+            Assert.AreEqual('X', _values.GetMaximunNextRomanValue('I')?.RomanValue);
+            Assert.AreEqual('C', _values.GetMaximunNextRomanValue('X')?.RomanValue);
+            Assert.AreEqual(null, _values.GetMaximunNextRomanValue('M')?.RomanValue);
+        }
+        
     }
 }
