@@ -67,29 +67,22 @@ namespace RomanCalculatorTDD
             if (i + 1 >= roman.Length)
                 return true;
 
-            switch (roman[i])
+            var model = _values.GetArabicValueModel(roman[i]);
+
+            switch (model.AmountOfRepetitions)
             {
-                case 'I':
-                    if (_values.GetArabicValue(roman[i + 1]) > _values.GetArabicValue('X'))
-                    {
-                        return false;
-                    }
-                    break;
-                case 'X':
-                    if (_values.GetArabicValue(roman[i + 1]) > _values.GetArabicValue('C'))
-                    {
-                        return false;
-                    }
-                    break;
-                case 'V':
-                case 'L':
-                case 'D':
+                case 1:
                     if (_values.GetArabicValue(roman[i]) < _values.GetArabicValue(roman[i + 1]))
                     {
-                        return false;                        
+                        return false;
                     }
                     break;
-                default:
+                case 3:
+                    var maxValue = _values.GetMaximunNextRomanValue(roman[i]);
+                    if (maxValue != null &&_values.GetArabicValue(roman[i + 1]) > maxValue.ArabicValue)
+                    {
+                        return false;
+                    }
                     break;
             }
 
@@ -130,22 +123,25 @@ namespace RomanCalculatorTDD
                 // Check if its the last char.
                 if (i == roman.Length - 1)
                 {
-                    result += _values.GetArabicValue(c);
+                    var n = _values.GetArabicValue(c);
+                    result += n ?? 0;
                     continue;
                 }
 
                 // Not the latest char.
                 var actualCharValue = _values.GetArabicValue(c);
-                if (_values.GetArabicValue(roman[i + 1]) > actualCharValue)
+                if (actualCharValue.HasValue)
                 {
-                    // Subtraction
-                    result -= actualCharValue;
+                    if (_values.GetArabicValue(roman[i + 1]) > actualCharValue.Value)
+                    {
+                        // Subtraction
+                        result -= actualCharValue.Value;
+                    }
+                    else
+                    {
+                        result += actualCharValue.Value;
+                    }
                 }
-                else
-                {
-                    result += actualCharValue;
-                }
-
 
             }
 
